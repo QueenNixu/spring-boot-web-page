@@ -34,7 +34,7 @@ public class SecurityConfig {
     	
     	return http
     			.csrf(config -> config.disable()) // disable to test postman
-    			.cors(config -> config.disable())
+    			.cors(config -> config.disable()) 
     			.sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
