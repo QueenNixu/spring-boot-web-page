@@ -10,7 +10,7 @@ public class EncryptedPasswordTest {
 	public void encode_test() {
 		
 		PasswordEncoder pe = new BCryptPasswordEncoder(); 
-		System.out.println(pe.encode("1234"));
+		System.out.println(pe.encode("QWERdf1234"));
 	}
 
 }

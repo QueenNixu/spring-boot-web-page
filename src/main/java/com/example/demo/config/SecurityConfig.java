@@ -33,8 +33,8 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
     	
     	return http
-    			.csrf(config -> config.disable()) // disable to test postman
-    			.cors(config -> config.disable()) 
+    			.csrf(config -> config.disable()) // disable to test postman and front end
+    			//.cors(config -> config.disable()) 
     			.sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
@@ -51,7 +51,7 @@ public class SecurityConfig {
  					)
     			)
                 .authorizeHttpRequests(auth -> {
-                	auth.requestMatchers("/", "/api/auth/**").permitAll();
+                	auth.requestMatchers("/api/auth/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
