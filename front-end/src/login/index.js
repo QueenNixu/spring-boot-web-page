@@ -37,7 +37,7 @@ const Login = () => {
         })
         .then(([body, headers]) => {
             setJwt(headers.get("authorization"));
-            window.location.href = "/dashboard";
+            window.location.href = "/";
             
         })
         .catch((message) => {
@@ -46,7 +46,7 @@ const Login = () => {
         }
 
     return (
-        <div className="container d-flex justify-content-center align-items-center vh-100">
+        <div className="container d-flex justify-content-center align-items-center" style={{ margin: '50px' }}>
             <div className="row">
                 <div className="col-md-12">
                     <form>
@@ -70,8 +70,9 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}/>
                         </div>
-                        {/* type="submit" originally */}
-                        <button type="button" className="btn btn-primary" onClick={() => sendLoginRequest()} >Submit</button>
+                        <div className='text-center'>
+                            <button type="button" className="btn btn-primary" onClick={() => sendLoginRequest()} >Submit</button>
+                        </div>
                     </form>
                 </div>
             </div>

@@ -12,14 +12,20 @@ const Homepage = () => {
         <div>
             <div className="container">
                 <div className="jumbotron mt-5">
-                    <h1 className="display-4">¡Bienvenido!</h1>
-                    <p className="lead">¿Café? Amamos el cafe! y el mate cocido!</p>
+                    <h1 className="display-4">Wellcome!</h1>
+                    <p className="lead">Coffee? ¡We love coffee!</p>
                     <hr className="my-4"></hr>
-                    {!jwt ? (
-                        <button className="btn btn-primary btn-lg" type="button" onClick={() => navigate('/login')}>Iniciar sesión</button>
-                    ) : null}
-                    <button className="btn btn-primary btn-lg" type="button" onClick={() => navigate('/dashboard')}>Dashboard</button>
-                    {/* <a className="btn btn-secondary btn-lg" href="#" role="button">No, gracias</a> */}
+                    <p className="lead">Aca se van a ver post de temas (hashtags) y usuarios que sigas</p>
+                    <div style={{display: 'flex', justifyContent: 'center'}}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <img src="/logo192.png" alt="Mi imagen" />
+                            <p>imagen statica</p>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <img src="/logo192.png" alt="Mi imagen" />
+                            <p>imagen statica</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.example.demo.filter.JwtFilter;
 
@@ -22,7 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
 
 	@Autowired
     private UserDetailsService userDetailsService;
@@ -51,7 +53,7 @@ public class SecurityConfig {
  					)
     			)
                 .authorizeHttpRequests(auth -> {
-                	auth.requestMatchers("/api/auth/**").permitAll();
+                	auth.requestMatchers("/api/auth/**", "/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -69,6 +71,13 @@ public class SecurityConfig {
                 .passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
+    
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/uploads/images/**")
+                .addResourceLocations("classpath:/uploads/images/");
+    }
+
 
     /*
     @Bean

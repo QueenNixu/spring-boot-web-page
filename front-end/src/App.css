@@ -1,0 +1,89 @@
+.account-button {
+    color: white; /* Color del texto */
+    background-color: transparent; /* Fondo transparente */
+    border: none; /* Borde transparente */
+    padding: 0.5rem 1rem; /* Padding para el botón */
+}
+
+.account-button:hover {
+    color: lightgrey; /* Color del texto al pasar el ratón por encima */
+    background-color: transparent; /* Fondo transparente al pasar el ratón por encima */
+}
+
+.dropdown-option {
+    background-color: black;
+    color: red;
+}
+
+.active {
+    border-bottom: 2px solid white; /* Cambia el color y el grosor según tus preferencias */
+    color: red;
+}
+
+
+body {
+    background-color: black; /* Cambia lightblue al color que prefieras */
+}
+
+/* imagenes de publish */
+
+.image-container {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.image-container-post {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.image-container:hover img {
+    opacity: 0.5; /* Reducir la opacidad de la imagen al hacer hover */
+    cursor: pointer;
+}
+
+.remove-button {
+    position: absolute;
+    top: 50%; /* Posiciona la "x" en el centro vertical del contenedor */
+    left: 50%; /* Posiciona la "x" en el centro horizontal del contenedor */
+    transform: translate(-50%, -50%); /* Centra la "x" exactamente en el centro del contenedor */
+    background-color: transparent; /* Fondo semi-transparente para la "x" */
+    border: none;
+    color: pink;
+    font-size: 100px;
+    /* padding: 2px 5px; */
+    cursor: pointer;
+    display: none; /* Ocultar la "x" por defecto */
+    pointer-events: none;
+}
+
+.image-container:hover .remove-button {
+    display: block; /* Mostrar la "x" al hacer hover sobre el contenedor de la imagen */
+}
+
+.upload-button {
+    margin-right: 10px;
+    display: inline-block;
+    width: 112px;
+    height: 112px;
+    background-color: transparent;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    color: #007bff;
+    font-size: 24px;
+    line-height: 100px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.upload-button input[type="file"] {
+    display: none;
+}
