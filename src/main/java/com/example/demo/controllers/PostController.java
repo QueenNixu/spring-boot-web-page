@@ -22,6 +22,9 @@ import com.example.demo.models.PostModel;
 import com.example.demo.models.UserModel;
 import com.example.demo.service.PostService;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
@@ -35,8 +38,16 @@ public class PostController {
 										@RequestPart("hashtags") String hashtags,
 										@RequestPart(value = "images", required = false) MultipartFile[] images, 
 	                                    @AuthenticationPrincipal UserModel user) {
-	    PostModel newPost = postService.save(title, text, hashtags, images, user);
-	    return ResponseEntity.ok(newPost);
+		try {
+			PostModel newPost = postService.save(title, text, hashtags, images, user);
+			return ResponseEntity.ok(newPost);
+		} catch (ExpiredJwtException e) {
+	        // El token ha expirado
+	        return ResponseEntity.ok(false);
+	    } catch (JwtException e) {
+	        // Error de validación del token
+	        return ResponseEntity.ok(false);
+	    }
 	}
 	
 	@GetMapping("/user")

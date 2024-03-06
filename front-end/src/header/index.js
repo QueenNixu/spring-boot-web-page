@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import { useLocalState } from '../util/useLocalStorage';
+import { jwtDecode } from 'jwt-decode';
 
 const Header = () => {
 
@@ -10,9 +11,17 @@ const Header = () => {
 
     // console.log(jwt);
 
+    const isTokenValid = () => {
+        if (!jwt) return false; // Si no hay JWT, retorna false
+
+        const decodedToken = jwtDecode(jwt); // Decodifica el token JWT
+        const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+
+        return decodedToken.exp > currentTimeInSeconds; // Retorna true si el token no ha expirado
+    };
+
     const logout = () => {
         setJwt(null);
-        window.location.reload();
     }
 
     return (
@@ -45,7 +54,7 @@ const Header = () => {
                 </div>
 
                 <div className='ms-auto'>
-                    { jwt ? (
+                    { isTokenValid() ? (
                         <ul className="navbar-nav ml-auto mb-2 mb-lg-0">
                             <li className="nav-item">
                                 <Dropdown>

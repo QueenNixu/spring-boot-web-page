@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocalState } from '../util/useLocalStorage';
+import { Navigate } from 'react-router-dom';
 
 const Publish = () => {
     const [jwt, setJwt] = useLocalState("", "jwt");
@@ -109,52 +110,75 @@ const Publish = () => {
     };
 
     const publish = () => {
-
-        // Validar campos
-        const errors = {};
-
-        if(titleChar > MAX_TITLE_CHAR_LIMIT) {
-            errors.title = `Title cannot exceed ${MAX_TITLE_CHAR_LIMIT} characters`;
-        } else if(!title.trim() && titleChar < MAX_TITLE_CHAR_LIMIT) {
-            errors.title = 'Title is required';
-        }
-        if(textChar > MAX_TEXT_CHAR_LIMIT) {
-            errors.text = `Text cannot exceed ${MAX_TEXT_CHAR_LIMIT} characters`;
-        } else if(!text.trim() && textChar < MAX_TEXT_CHAR_LIMIT) {
-            errors.text = 'Text is required';
-        }
-        if(hashtagsChar >MAX_HASHTAGS_CHAR_LIMIT) {
-            errors.hashtags = `Hashtags cannot exceed ${MAX_HASHTAGS_CHAR_LIMIT} characters`;
-        } else if(!hashtags.trim() && hashtagsChar < MAX_HASHTAGS_CHAR_LIMIT) {
-            errors.hashtags = 'Hashtags are required';
-        }
-        setErrorMessages(errors);
-
-        if (Object.keys(errors).length > 0) {
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('text', text);
-        formData.append('hashtags', hashtags);
-
-        // Enviar datos al servidor
-        fetch("/api/posts", {
+        // Verificar la validez del token JWT
+        fetch(`/api/auth/validate?token=${jwt}`, {
             headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${jwt}`
             },
-            method: "POST",
-            body: formData,
+            method: "GET",
         })
         .then(response => {
-            if(response.status === 200) return response.json();
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                // Si el token no es válido o ha expirado, redirigir al usuario a la página de inicio de sesión
+                window.location.href = '/login';
+                throw new Error('Token expired or invalid');
+            }
         })
-        .then((post) => {
-            console.log(post);
-            //window.location.href = `/myPage`;
+        .then(isValid => {
+            // Si el token es válido, continuar con la lógica de publicación
+            // Validar campos
+            const errors = {};
+
+            if(titleChar > MAX_TITLE_CHAR_LIMIT) {
+                errors.title = `Title cannot exceed ${MAX_TITLE_CHAR_LIMIT} characters`;
+            } else if(!title.trim() && titleChar < MAX_TITLE_CHAR_LIMIT) {
+                errors.title = 'Title is required';
+            }
+            if(textChar > MAX_TEXT_CHAR_LIMIT) {
+                errors.text = `Text cannot exceed ${MAX_TEXT_CHAR_LIMIT} characters`;
+            } else if(!text.trim() && textChar < MAX_TEXT_CHAR_LIMIT) {
+                errors.text = 'Text is required';
+            }
+            if(hashtagsChar >MAX_HASHTAGS_CHAR_LIMIT) {
+                errors.hashtags = `Hashtags cannot exceed ${MAX_HASHTAGS_CHAR_LIMIT} characters`;
+            } else if(!hashtags.trim() && hashtagsChar < MAX_HASHTAGS_CHAR_LIMIT) {
+                errors.hashtags = 'Hashtags are required';
+            }
+            setErrorMessages(errors);
+
+            if (Object.keys(errors).length > 0) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('text', text);
+            formData.append('hashtags', hashtags);
+
+            // Enviar datos al servidor
+            fetch("/api/posts", {
+                headers: {
+                    Authorization: `Bearer ${jwt}`
+                },
+                method: "POST",
+                body: formData,
+            })
+            .then(response => {
+                if(response.status === 200) return response.json();
+            })
+            .then((post) => {
+                console.log(post);
+                window.location.href = `/myPage`;
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
     };
+
     
     
 
