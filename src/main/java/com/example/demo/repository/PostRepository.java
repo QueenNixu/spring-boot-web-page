@@ -13,3 +13,4 @@ public interface PostRepository extends JpaRepository<PostModel, Long> {
 	Set<PostModel> findByUser(UserModel user);
 
 }
+

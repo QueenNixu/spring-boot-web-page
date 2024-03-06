@@ -53,7 +53,7 @@ public class SecurityConfig implements WebMvcConfigurer {
  					)
     			)
                 .authorizeHttpRequests(auth -> {
-                	auth.requestMatchers("/api/auth/**", "/**").permitAll();
+                	auth.requestMatchers("/api/auth/**", "/api/posts/**", "/api/images/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -71,12 +71,13 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
-    
+    /*
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/images/**")
                 .addResourceLocations("classpath:/uploads/images/");
     }
+    */
 
 
     /*

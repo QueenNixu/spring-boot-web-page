@@ -87,3 +87,7 @@ body {
 .upload-button input[type="file"] {
     display: none;
 }
+
+.text-container {
+    white-space: pre-line;
+}

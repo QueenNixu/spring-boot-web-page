@@ -3,16 +3,31 @@ import { useLocalState } from '../util/useLocalStorage';
 
 const Post = () => {
 
-    const postId = window.location.href.split("/myPage/post/")[1];
+    const postIdMatch = window.location.href.match(/\/(myPage|dashboard)\/post\/(\d+)/);
+    const postId = postIdMatch ? postIdMatch[2] : null;
+
+    console.log(postId);
+
     const [jwt, setJwt] = useLocalState("", "jwt");
     const [post, setPost] = useState("");
     const [formattedDate, setFormattedDate] = useState(null);
+    const [images, setImages] = useState([]);
+    const [username, setUsername] = useState("");
+
+    useEffect(() => {
+        if(jwt) {
+            const tokenParts = jwt.split('.');
+            if (tokenParts.length === 3) {
+                const payload = JSON.parse(atob(tokenParts[1]));
+                setUsername(payload.sub);
+            }
+        }
+    }, [jwt]);
 
     useEffect(() => {
         fetch(`/api/posts/${postId}`, {
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`,
             },
             method: "GET",
         })
@@ -29,6 +44,44 @@ const Post = () => {
             // Manejar el error, por ejemplo, mostrando un mensaje de error al usuario
         });
     }, []);
+    
+    useEffect(() => {
+        fetch(`/api/images/${postId}`, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "GET",
+        })
+        .then(response => {
+            if(response.status === 200) return response.json();
+        })
+        .then(imageData => {
+            console.log(imageData);
+            setImages(imageData);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Manejar el error, por ejemplo, mostrando un mensaje de error al usuario
+        });
+    }, []);
+
+    const deleteAction = () => {
+
+        fetch(`/api/posts/${postId}`, {
+            headers: {
+                Authorization: `Bearer ${jwt}`,
+            },
+            method: "DELETE",
+        })
+        .then(response => {
+            if(response.status === 200) return response.json();
+        })
+        .then(window.location.href = "/myPage")
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    }
 
     return (
         <div className="container">
@@ -44,21 +97,32 @@ const Post = () => {
                             <h2 className="card-title">By: {post.user.username}</h2>
                             <h6 className="card-subtitle mb-2 text-muted">Publish Date: {formattedDate}</h6>
                             <hr className="my-2"></hr>
-                            <p className="card-text">{post.text}</p>
+                            <p className="text-container">{post.text}</p>
                             <hr className="my-2"></hr>
-                            <p className="card-text">{post.hashtags}</p>
-                            <hr className="my-1"></hr>
                             
-                            {post.imagesUrl.map((imageUrl, index) => (
-                                <div key={index} className="mb-3 image-container-post">
-                                    <img src={imageUrl} alt={`Image ${index}`} style={{ width: 'auto', maxHeight: '224px'}} />
-                                    <p>{imageUrl}</p>
+                            {images.length > 0 && (
+                                <div>
+                                    {images.map((image, index) => (
+                                        <div key={index} className="mb-2 image-container-post">
+                                            <img src={`data:image/jpeg;base64,${image.datos}`} alt={`Image ${index}`} style={{ width: 'auto', height: '224px'}} />
+                                        </div>
+                                    ))}
+                                    <hr className="my-1"></hr>
                                 </div>
-                            ))}
+                            )}
+                            <p className="card-text">#{post.hashtags}</p>
 
-                            <hr className="my-1"></hr>
-                            <button className="btn btn-primary" type="button" style={{ marginTop: '0.5rem', marginRight: '0.5rem' }}>Edit</button>
-                            <button className="btn btn-danger" type="button" style={{ marginTop: '0.5rem', marginRight: '0.5rem' }}>Delete</button>
+                            {username === post.user.username && (
+                                <div>
+                                    <hr className="my-1"></hr>
+                                    <button className="btn btn-primary" type="button" style={{ marginTop: '0.5rem', marginRight: '0.5rem' }}>Edit</button>
+                                    <button className="btn btn-danger" type="button"
+                                            style={{ marginTop: '0.5rem', marginRight: '0.5rem' }}
+                                            onClick={() => deleteAction()}>Delete
+                                    </button>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </div>
@@ -69,11 +133,6 @@ const Post = () => {
             )}
         </div>
     );
-    
-    
-    
-    
-    
 };
 
 export default Post;

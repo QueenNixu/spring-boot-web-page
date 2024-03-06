@@ -7,8 +7,21 @@ const Publish = () => {
     const [text, setText] = useState("");
     // const [videoUrl, setVideoUrl] = useState("");
     const [hashtags, setHashtags] = useState("");
+    const [titleChar, setTitleChar] = useState(0);
+    const [textChar, setTextChar] = useState(0);
+    const [hashtagsChar, setHashtagsChar] = useState(0);
     const [images, setImages] = useState([]);
     // const [videos, setVideos] = useState([]);
+    const [errorMessages, setErrorMessages] = useState({
+        title: '',
+        text: '',
+        hashtags: ''
+    });
+
+    const MAX_IMAGE_SIZE_MB = 2;
+    const MAX_TITLE_CHAR_LIMIT = 255;
+    const MAX_TEXT_CHAR_LIMIT = 2000;
+    const MAX_HASHTAGS_CHAR_LIMIT = 255;
 
     const handleImageChange = (event) => {
         const files = event.target.files;
@@ -16,6 +29,13 @@ const Publish = () => {
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
+
+            // Verificar el tamaño del archivo
+            if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+                alert(`The image "${file.name}" exceeds the maximum allowed size of ${MAX_IMAGE_SIZE_MB} MB.`);
+                continue; // No agregar la imagen al estado y pasar a la siguiente iteración
+            }
+            
             const reader = new FileReader();
 
             reader.onload = (e) => {
@@ -25,7 +45,7 @@ const Publish = () => {
 
             reader.readAsDataURL(file);
         }
-        event.target.value = null;
+        event.target.value = null; // Limpiar el valor del input para permitir la selección de la misma imagen nuevamente (en caso de que el usuario quiera reemplazarla)
     };
 
     // const handleVideoChange = (event) => {
@@ -58,17 +78,68 @@ const Publish = () => {
     //     setVideos(newVideos);
     // };
 
+    const updateTitle = (value) => {
+        setTitle(value);
+        setTitleChar(value.length);
+        if (value.length > MAX_TITLE_CHAR_LIMIT) {
+            setErrorMessages({ ...errorMessages, title: `Title cannot exceed ${MAX_TITLE_CHAR_LIMIT} characters` });
+        } else {
+            setErrorMessages({ ...errorMessages, title: '' });
+        }
+    };
+
+    const updateText = (value) => {
+        setText(value);
+        setTextChar(value.length);
+        if (value.length > MAX_TEXT_CHAR_LIMIT) {
+            setErrorMessages({ ...errorMessages, text: `Text cannot exceed ${MAX_TEXT_CHAR_LIMIT} characters` });
+        } else {
+            setErrorMessages({ ...errorMessages, text: '' });
+        }
+    };
+
+    const updateHashtags = (value) => {
+        setHashtags(value);
+        setHashtagsChar(value.length);
+        if (value.length > MAX_HASHTAGS_CHAR_LIMIT) {
+            setErrorMessages({ ...errorMessages, hashtags: `Hashtags cannot exceed ${MAX_HASHTAGS_CHAR_LIMIT} characters` });
+        } else {
+            setErrorMessages({ ...errorMessages, hashtags: '' });
+        }
+    };
+
     const publish = () => {
+
+        // Validar campos
+        const errors = {};
+
+        if(titleChar > MAX_TITLE_CHAR_LIMIT) {
+            errors.title = `Title cannot exceed ${MAX_TITLE_CHAR_LIMIT} characters`;
+        } else if(!title.trim() && titleChar < MAX_TITLE_CHAR_LIMIT) {
+            errors.title = 'Title is required';
+        }
+        if(textChar > MAX_TEXT_CHAR_LIMIT) {
+            errors.text = `Text cannot exceed ${MAX_TEXT_CHAR_LIMIT} characters`;
+        } else if(!text.trim() && textChar < MAX_TEXT_CHAR_LIMIT) {
+            errors.text = 'Text is required';
+        }
+        if(hashtagsChar >MAX_HASHTAGS_CHAR_LIMIT) {
+            errors.hashtags = `Hashtags cannot exceed ${MAX_HASHTAGS_CHAR_LIMIT} characters`;
+        } else if(!hashtags.trim() && hashtagsChar < MAX_HASHTAGS_CHAR_LIMIT) {
+            errors.hashtags = 'Hashtags are required';
+        }
+        setErrorMessages(errors);
+
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
+
         const formData = new FormData();
         formData.append('title', title);
         formData.append('text', text);
         formData.append('hashtags', hashtags);
-        
-        // Añadir todas las imágenes como una sola parte llamada "images"
-        images.forEach((image, index) => {
-            formData.append(`images`, image.file);
-        });
-    
+
+        // Enviar datos al servidor
         fetch("/api/posts", {
             headers: {
                 Authorization: `Bearer ${jwt}`
@@ -81,7 +152,7 @@ const Publish = () => {
         })
         .then((post) => {
             console.log(post);
-            window.location.href = `/myPage`;
+            //window.location.href = `/myPage`;
         });
     };
     
@@ -92,28 +163,44 @@ const Publish = () => {
             <div className="container d-flex justify-content-center align-items-center" style={{ margin: '50px' }}>
                 <div className="col-md-10">
                     <form>
-
-                        <div className="mb-3">
-                            {/* <label htmlFor="title" className="form-label">Title</label> */}
+                    <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ width: "100%"}}>
                             <input
-                                className="form-control"
+                                className={`form-control ${errorMessages.title && 'is-invalid'}`}
                                 id="title"
                                 placeholder="Title here"
                                 value={title}
-                                onChange={(e) => setTitle(e.target.value)}
+                                onChange={(e) => updateTitle(e.target.value)}
+                                onClick={() => {
+                                    if (!title.trim()) {
+                                        setErrorMessages({ ...errorMessages, title: '' });
+                                    }
+                                }}
                             />
+                            {errorMessages.title && <div className="invalid-feedback">{errorMessages.title}</div>}
                         </div>
+                        <span style={{ paddingTop: "0.375rem", paddingLeft: "0.25rem" }}>{titleChar}/{MAX_TITLE_CHAR_LIMIT}</span>
+                    </div>
 
-                        <div className="mb-3">
-                            {/* <label htmlFor="text" className="form-label">Text</label> */}
-                            <textarea
-                                className="form-control"
-                                id="text"
-                                placeholder="What are you thinking?"
-                                value={text}
-                                onChange={(e) => setText(e.target.value)}
-                                style={{ minHeight: '100px' }} // Establecer una altura mínima
-                            />
+
+                        <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ width: "100%"}}>
+                                <textarea
+                                    className={`form-control ${errorMessages.text && 'is-invalid'}`}
+                                    id="text"
+                                    placeholder="What are you thinking?"
+                                    value={text}
+                                    onChange={(e) => updateText(e.target.value)}
+                                    onClick={() => {
+                                        if (!text.trim()) {
+                                            setErrorMessages({ ...errorMessages, text: '' });
+                                        }
+                                    }}
+                                    style={{ minHeight: '140px' }}
+                                />
+                                {errorMessages.text && <div className="invalid-feedback">{errorMessages.text}</div>}
+                            </div>
+                            <span style={{ paddingTop: "0.375rem", paddingLeft: "0.25rem" }}>{textChar}/{MAX_TEXT_CHAR_LIMIT}</span>
                         </div>
 
                         <div className="mb-3">
@@ -145,40 +232,24 @@ const Publish = () => {
                             </div>
                         </div>
 
-                        <div className="mb-3">
-                            <label htmlFor="hashtags" className="form-label">Hashtags</label>
-                            <input
-                                className="form-control"
-                                id="hashtags"
-                                placeholder="Hashtags beginning with # and separated with a space"
-                                value={hashtags}
-                                onChange={(e) => setHashtags(e.target.value)}
-                            />
-                        </div>
-
-                        {/* <div className="mb-3">
-                            <label className="btn btn-primary">
-                                Upload Video(s)
+                        <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ width: "100%"}}>
                                 <input
-                                    type="file"
-                                    className="form-control"
-                                    id="videos"
-                                    accept="video/*"
-                                    multiple
-                                    style={{ display: 'none' }} // Ocultar el input de tipo file
-                                    onChange={(e) => handleVideoChange(e)}
+                                    className={`form-control ${errorMessages.hashtags && 'is-invalid'}`}
+                                    id="hashtags"
+                                    placeholder="Hashtags beginning with # and separated with a space"
+                                    value={hashtags}
+                                    onChange={(e) => updateHashtags(e.target.value)}
+                                    onClick={() => {
+                                        if (!hashtags.trim()) {
+                                            setErrorMessages({ ...errorMessages, hashtags: '' });
+                                        }
+                                    }}
                                 />
-                            </label>
-                        </div> */}
-
-                        {/* <div>
-                            {videos.map((video, index) => (
-                                <div key={index} className="mb-2 video-container">
-                                    <img src={video.thumbnail} alt={`Video ${index + 1}`} style={{ width: '220px', height: 'auto' }} onClick={() => removeVideo(index)}/>
-                                    <p type="button" className="remove-button">X</p>
-                                </div>
-                            ))}
-                        </div> */}
+                                {errorMessages.hashtags && <div className="invalid-feedback">{errorMessages.hashtags}</div>}
+                            </div>
+                            <span style={{ paddingTop: "0.375rem", paddingLeft: "0.25rem" }}>{hashtagsChar}/{MAX_HASHTAGS_CHAR_LIMIT}</span>
+                        </div>
 
                         <div className='text-center'>
                             <button type="button" className="btn btn-primary" onClick={() => publish()}>Submit</button>
