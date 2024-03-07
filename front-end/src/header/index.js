@@ -22,6 +22,7 @@ const Header = () => {
 
     const logout = () => {
         setJwt(null);
+        window.location.reload();
     }
 
     return (

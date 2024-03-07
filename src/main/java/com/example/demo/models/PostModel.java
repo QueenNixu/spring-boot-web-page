@@ -25,6 +25,7 @@ public class PostModel {
 	private String text;
     private LocalDateTime publishDate;
     private String hashtags;
+    private Long likes;
 	
 	
 	

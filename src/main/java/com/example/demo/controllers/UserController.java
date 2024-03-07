@@ -19,7 +19,7 @@ public class UserController {
 	private UserService userService;
 	
 	@GetMapping(path = "/{username}")
-	public Optional<UserModel> getUserById(@PathVariable String username) {
+	public Optional<UserModel> getUserByUsername(@PathVariable String username) {
 		return userService.getReferenceByUsername(username);	
 	}
 

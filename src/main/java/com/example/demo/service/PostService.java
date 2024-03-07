@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -74,5 +75,44 @@ public class PostService {
 		imageRepository.deleteAllByPostId(id);
 		postRepository.deleteById(id);
 	}
+
+	// Obtener los 3 top posts
+	public List<PostModel> findTopPostsByUser(UserModel user) {
+	    Set<PostModel> allPosts = postRepository.findByUser(user);
+	    List<PostModel> topPosts = new ArrayList<>();
+
+	    // Encontrar los top 3 posts con más likes
+	    PostModel maxLikes1 = null;
+	    PostModel maxLikes2 = null;
+	    PostModel maxLikes3 = null;
+
+	    for (PostModel post : allPosts) {
+	        if (maxLikes1 == null || post.getLikes() > maxLikes1.getLikes()) {
+	            maxLikes3 = maxLikes2;
+	            maxLikes2 = maxLikes1;
+	            maxLikes1 = post;
+	        } else if (maxLikes2 == null || post.getLikes() > maxLikes2.getLikes()) {
+	            maxLikes3 = maxLikes2;
+	            maxLikes2 = post;
+	        } else if (maxLikes3 == null || post.getLikes() > maxLikes3.getLikes()) {
+	            maxLikes3 = post;
+	        }
+	    }
+
+	    // Agregar los top 3 posts al array en orden de mayor a menor likes
+	    if (maxLikes1 != null) {
+	        topPosts.add(0, maxLikes1);
+	    }
+	    if (maxLikes2 != null) {
+	        topPosts.add(1, maxLikes2);
+	    }
+	    if (maxLikes3 != null) {
+	        topPosts.add(2, maxLikes3);
+	    }
+
+	    return topPosts;
+	}
+
+
 	
 }

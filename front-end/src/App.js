@@ -13,6 +13,7 @@ import Header from './header';
 import Footer from './footer';
 import Publish from './publish';
 import Dashboard from './dashboard';
+import Profile from './profile';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/post/:id" element={<Post/>} />
+        <Route path="/profile" element={<PrivateRoute><Profile/></PrivateRoute>} />
         <Route path="/myPage" element={<PrivateRoute><MyPage/></PrivateRoute>} />
         <Route path="/myPage/publish" element={<PrivateRoute><Publish/></PrivateRoute>} />
         <Route path="/myPage/post/:id" element={<PrivateRoute><Post/></PrivateRoute>} />

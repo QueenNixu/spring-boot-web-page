@@ -91,3 +91,9 @@ body {
 .text-container {
     white-space: pre-line;
 }
+
+.overflow-hidden {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* white-space: nowrap; */
+}

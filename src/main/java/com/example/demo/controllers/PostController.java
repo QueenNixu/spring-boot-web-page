@@ -59,6 +59,13 @@ public class PostController {
 	    return ResponseEntity.ok(invertedPosts);
 	}
 	
+	@GetMapping("/topPost")
+	public ResponseEntity<?> getTopPostsFromUser(@AuthenticationPrincipal UserModel user) {
+		//obtener los 3 post con mas likes
+	    List<PostModel> postsByUser = postService.findTopPostsByUser(user);
+	    return ResponseEntity.ok(postsByUser);
+	}
+	
 	@GetMapping("/all")
 	public ResponseEntity<?> getAllPosts() {
 	    List<PostModel> postsByUsers = postService.findAll();
