@@ -39,10 +39,12 @@ public class PostService {
         newPost.setHashtags(hashtags);
         newPost.setPublishDate(LocalDateTime.now());
         newPost.setUser(user);
+        newPost.setLikes(0L);
         
         PostModel post = postRepository.save(newPost);
         
         if(images != null) {
+        	System.out.print("HAY IMAGENES!");
         	for (MultipartFile image : images) {
                 ImageModel imageModel = new ImageModel();
                 try {

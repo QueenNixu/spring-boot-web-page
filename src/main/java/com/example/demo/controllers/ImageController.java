@@ -1,5 +1,8 @@
 package com.example.demo.controllers;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -8,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.models.ImageModel;
@@ -37,5 +42,18 @@ public class ImageController {
 	    Set<ImageModel> imagesFromPost = imageService.findByPost(post);
 	    return ResponseEntity.ok(imagesFromPost);
 	}
+	
+	@GetMapping("/firstImageFromTopPosts")
+	public ResponseEntity<?> getFirstImageFromPosts(
+	    @RequestParam Long postId1,
+	    @RequestParam Long postId2,
+	    @RequestParam Long postId3) {
+	    List<ImageModel> firstImages = imageService.findFirstImagesFromPosts(postId1, postId2, postId3);
+	    
+	    return ResponseEntity.ok(firstImages);
+	}
+
+
+
 
 }

@@ -97,3 +97,63 @@ body {
     text-overflow: ellipsis;
     /* white-space: nowrap; */
 }
+
+a.upload-button {
+    text-decoration: none; /* Quita el subrayado */
+}
+
+.upload-button-text {
+    margin-right: 10px;
+    display: inline-block;
+    /* width: 200px; */
+    height: 100px; /* Altura del rectángulo */
+    background-color: transparent;
+    border: 2px solid #007bff;
+    border-radius: 24px; /* Radio de las esquinas redondas */
+    color: #007bff;
+    font-size: 20px;
+    line-height: 48px; /* Alinea el texto verticalmente */
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.upload-button-text-2 {
+    margin-right: 10px;
+    display: inline-block;
+    /* width: 200px; */
+    height: 100px; /* Altura del rectángulo */
+    border: 2px solid #007bff;
+    border-radius: 0.375rem; /* Radio de las esquinas redondas */
+    color: #007bff;
+    font-size: 20px;
+    line-height: 48px; /* Alinea el texto verticalmente */
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.upload-button-text:hover,
+.upload-button-text-2:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+a.upload-button-text,
+a.upload-button-text-2 {
+    text-decoration: none; /* Quita el subrayado */
+}
+
+.card-link-1 {
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.card-link-1:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+a.card-link-1 {
+    text-decoration: none; /* Quita el subrayado */
+}

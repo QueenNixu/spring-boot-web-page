@@ -14,7 +14,7 @@ const Login = () => {
     //console.log(jwt);
 
     function sendLoginRequest() {
-        console.log("Sending Login Request!");
+        //console.log("Sending Login Request!");
 
         const requestBody = {
             "username": username,

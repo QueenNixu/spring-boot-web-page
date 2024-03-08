@@ -18,6 +18,7 @@ const Dashboard = () => {
             if(response.status === 200) return response.json();
         })
         .then(post => {
+            //console.log(post);
             setPosts(post);
         });
     }, []);
@@ -27,7 +28,7 @@ const Dashboard = () => {
             <div className="container">
                 <div className="jumbotron mt-5">
                     <h1 className="display-4">Dashboard</h1>
-                    <p className="lead">Explore other user's clips, scores, builds, ranks, opinions... make friends! or <a href="/myPage/publish" className="btn btn-primary" role="button">Post something!</a></p>
+                    <p className="lead">Explore other user's clips, scores, builds, ranks, opinions... make friends! or <a href="/publish" className="btn btn-primary" role="button">Post something!</a></p>
                     <hr className="my-4"/>
                     {posts ? (
                         posts.map((post, index) => {
@@ -39,19 +40,23 @@ const Dashboard = () => {
                             const isOwner = post.user.username === username;
 
                             // Construir la URL del enlace basada en si el usuario es propietario del post
-                            const postLink = isOwner ? `/myPage/post/${post.id}` : `/dashboard/post/${post.id}`;
+                            const postLink = isOwner ? `/dashboard/post/${post.id}` : `/dashboard/post/${post.id}`;
 
                             return (
-                                <a key={post.id} href={postLink} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    <Card className="post-card" style={{ marginBottom: index !== posts.length - 1 ? '20px' : 0 }}>
+                                <a key={post.id} href={postLink} style={{ maxWidth: "100px", textDecoration: 'none', color: 'inherit' }}>
+                                    <Card className="post-card" style={{ marginBottom: index !== posts.length - 1 ? '20px' : 0,
+                                                                         backgroundColor: isOwner ? '#007bff' : '',
+                                                                         color: isOwner ? '#fff' : '',
+                                                                        //  maxWidth: "33.33%"
+                                                                         }}>
                                         <Card.Body>
                                             <Card.Title>Title: {post.title}</Card.Title>
-                                            <Card.Subtitle> By: {post.user.username}</Card.Subtitle>
+                                            <Card.Subtitle> By: {isOwner ? "You" : post.user.username}</Card.Subtitle>
                                             <Card.Text>#: {post.hashtags}</Card.Text>
                                         </Card.Body>
                                     </Card>
                                 </a>
-                            );
+                            );                            
                         })
                     ) : (
                         <></>

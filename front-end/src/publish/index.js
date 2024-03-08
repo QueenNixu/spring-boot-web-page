@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocalState } from '../util/useLocalStorage';
 import { Navigate } from 'react-router-dom';
 
@@ -18,13 +18,25 @@ const Publish = () => {
         text: '',
         hashtags: ''
     });
+    const [currentUsername, setCurrentUsername] = useState("");
 
     const MAX_IMAGE_SIZE_MB = 2;
     const MAX_TITLE_CHAR_LIMIT = 255;
     const MAX_TEXT_CHAR_LIMIT = 2000;
     const MAX_HASHTAGS_CHAR_LIMIT = 255;
 
+    useEffect(() => {
+        if(jwt) {
+            const tokenParts = jwt.split('.');
+            if (tokenParts.length === 3) {
+                const payload = JSON.parse(atob(tokenParts[1]));
+                setCurrentUsername(payload.sub);
+            }
+        }
+    }, [jwt]);
+
     const handleImageChange = (event) => {
+        console.log("image added");
         const files = event.target.files;
         const newImages = [...images];
 
@@ -47,6 +59,8 @@ const Publish = () => {
             reader.readAsDataURL(file);
         }
         event.target.value = null; // Limpiar el valor del input para permitir la selección de la misma imagen nuevamente (en caso de que el usuario quiera reemplazarla)
+
+        console.log(images);
     };
 
     // const handleVideoChange = (event) => {
@@ -158,6 +172,10 @@ const Publish = () => {
             formData.append('text', text);
             formData.append('hashtags', hashtags);
 
+            images.forEach((image, index) => {
+                formData.append(`images`, image.file);
+            });
+
             // Enviar datos al servidor
             fetch("/api/posts", {
                 headers: {
@@ -171,7 +189,8 @@ const Publish = () => {
             })
             .then((post) => {
                 console.log(post);
-                window.location.href = `/myPage`;
+                console.log(formData);
+                window.location.href = `/page/${currentUsername}`;
             });
         })
         .catch(error => {

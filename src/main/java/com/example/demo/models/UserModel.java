@@ -61,6 +61,11 @@ public class UserModel implements UserDetails {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	@JsonIgnore
 	private List<Authority> authorities = new ArrayList<>();
+	
+	
+	private String intro;
+	
+	private String likedTopics;
 	/*
 	@ManyToMany(fetch = FetchType.LAZY, targetEntity = UserModel.class, cascade = CascadeType.PERSIST)
 	@JoinTable(name = "user_friends", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "friends_id"))
