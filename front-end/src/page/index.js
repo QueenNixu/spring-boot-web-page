@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocalState } from '../util/useLocalStorage';
 import { Card, Button } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const Page = () => {
 
@@ -12,8 +13,17 @@ const Page = () => {
     const[posts, setPosts] = useState(null);
     const [currentUsername, setCurrentUsername] = useState("");
 
+    const isTokenValid = () => {
+        if (!jwt) return false; // Si no hay JWT, retorna false
+
+        const decodedToken = jwtDecode(jwt); // Decodifica el token JWT
+        const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+
+        return decodedToken.exp > currentTimeInSeconds; // Retorna true si el token no ha expirado
+    };
+
     useEffect(() => {
-        if(currentUsername === username) window.location.href="/myPage";
+        if(currentUsername === username && isTokenValid()) window.location.href="/myPage";
     }, [currentUsername, username]);
     
 

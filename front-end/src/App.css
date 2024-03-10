@@ -63,6 +63,57 @@ body {
     display: block; /* Mostrar la "x" al hacer hover sobre el contenedor de la imagen */
 }
 
+.upload-card {
+    margin-right: 10px;
+    display: inline-block;
+    border: 2px solid #007bff;
+    color: #007bff;
+    font-size: 24px;
+    line-height: 100px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.upload-card:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.upload-card:hover .upload-button-profile {
+    color: #fff;
+    border-color: #fff;
+}
+
+.upload-button-profile {
+    margin-right: 10px;
+    display: inline-block;
+    width: 112px;
+    height: 112px;
+    background-color: transparent;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    color: #007bff;
+    font-size: 24px;
+    line-height: 100px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* .upload-button-profile:hover {
+    background-color: #007bff;
+    color: #fff;
+} */
+
+a.upload-button-profile {
+    text-decoration: none; /* Quita el subrayado */
+}
+
+a.upload-card {
+    text-decoration: none; /* Quita el subrayado */
+}
+
 .upload-button {
     margin-right: 10px;
     display: inline-block;
@@ -156,4 +207,41 @@ a.upload-button-text-2 {
 
 a.card-link-1 {
     text-decoration: none; /* Quita el subrayado */
+}
+
+.card-link-1:hover a {
+    color: #fff; /* Establece el color de texto en blanco para los enlaces dentro de .card-link-1 cuando están en estado de hover */
+}
+
+.post-card {
+    background-color: #ffffff; /* Fondo blanco original */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Transición suave para el color de fondo y el tamaño */
+}
+
+.post-card:hover {
+    background-color: #b3e0ff; /* Cambia a un fondo celeste menos claro en hover */
+    transform: scale(1.05); /* Aumenta el tamaño en hover (5% más grande) */
+}
+
+.post-card-owner {
+    background-color: #b3e0ff; /* Azul base como en hover */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Transición suave para el color de fondo y el tamaño */
+}
+
+.post-card-owner:hover {
+    background-color: #80bfff; /* Cambia a un fondo celeste aún menos claro en hover */
+    transform: scale(1.05); /* Aumenta el tamaño en hover (5% más grande) */
+}
+
+.card-hashtag {
+    color: #555555;
+    text-decoration: none; /* Quita el subrayado */
+}
+
+.card-hashtag:hover {
+    text-decoration: underline;
+}
+
+.card-footer::-webkit-scrollbar {
+    display: none; /* Oculta el scrollbar en navegadores webkit */
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocalState } from '../util/useLocalStorage';
 import { useParams } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const MyProfile = () => {
 
@@ -78,6 +79,14 @@ const MyProfile = () => {
         }
     }, [jwt, topPost]);
       
+    const isTokenValid = () => {
+        if (!jwt) return false; // Si no hay JWT, retorna false
+
+        const decodedToken = jwtDecode(jwt); // Decodifica el token JWT
+        const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+
+        return decodedToken.exp > currentTimeInSeconds; // Retorna true si el token no ha expirado
+    };
 
     return (
         <div>
@@ -109,7 +118,7 @@ const MyProfile = () => {
                             <div className="col">
                                 {topPost[0] ? (
                                     // Si el primer post existe, mostrar la card con sus detalles
-                                    <a href={`/dashboard/post/${topPost[0].id}`} className="card h-100 card-link-1" style={{ minHeight: "500px", maxHeight: "500px" }}>
+                                    <a href={`/dashboard/post/${topPost[0].id}`} className="card h-100 card-link-1" style={{ minHeight: "400px", maxHeight: "400px" }}>
                                         {topPostImages && topPostImages.length > 0 && topPostImages[0] !== null ? (
                                             <img src={`data:image/jpeg;base64,${topPostImages[0].datos}`} className="card-img-top" style={{ minHeight: "150px", maxHeight: "150px", objectFit: "cover" }} alt="..." />
                                         ) : (
@@ -121,13 +130,15 @@ const MyProfile = () => {
                                                 {topPost[0].text}
                                             </p>...
                                         </div>
-                                        <div className="card-footer">
-                                            <small className="text-body-secondary">#: {topPost[0].hashtags}</small>
-                                        </div>
+                                        {/* <small className="card-footer " style={{ maxHeight: "68px", overflowX: "scroll", scrollBehavior: "smooth" }}>
+                                            {topPost[0].hashtags.split(" ").map((hashtag, index) => (
+                                                <a href={`/currentPath/${hashtag}`} className="card-hashtag" key={index}>#{hashtag} </a>
+                                            ))}
+                                        </small> */}
                                     </a>
                                 ) : (
                                     // Si el primer post no existe, mostrar una card vacía
-                                    <div className="card h-100 text-center d-flex align-items-center justify-content-center" style={{ minHeight: "500px", maxHeight: "500px" }}>
+                                    <div className="card h-100 text-center d-flex align-items-center justify-content-center" style={{ minHeight: "400px", maxHeight: "400px" }}>
                                         <div className="text-body-secondary">No more post to see.</div>
                                     </div>
                                 )}
@@ -137,7 +148,7 @@ const MyProfile = () => {
                             <div className="col">
                                 {topPost[1] ? (
                                     // Si el segundo post existe, mostrar la card con sus detalles
-                                    <a href={`/dashboard/post/${topPost[1].id}`} className="card h-100 card-link-1" style={{ minHeight: "500px", maxHeight: "500px" }}>
+                                    <a href={`/dashboard/post/${topPost[1].id}`} className="card h-100 card-link-1" style={{ minHeight: "400px", maxHeight: "400px" }}>
                                         {topPostImages && topPostImages.length > 1 && topPostImages[1] !== null ? (
                                             <img src={`data:image/jpeg;base64,${topPostImages[1].datos}`} className="card-img-top" style={{ minHeight: "150px", maxHeight: "150px", objectFit: "cover" }} alt="..." />
                                         ) : (
@@ -149,13 +160,11 @@ const MyProfile = () => {
                                                 {topPost[1].text}
                                             </p>...
                                         </div>
-                                        <div className="card-footer">
-                                            <small className="text-body-secondary">#: {topPost[1].hashtags}</small>
-                                        </div>
+                                        {/* <small className="card-footer">#: {topPost[1].hashtags}</small> */}
                                     </a>
                                 ) : (
                                     // Si el segundo post no existe, mostrar una card vacía
-                                    <div className="card h-100 text-center d-flex align-items-center justify-content-center" style={{ minHeight: "500px", maxHeight: "500px" }}>
+                                    <div className="card h-100 text-center d-flex align-items-center justify-content-center" style={{ minHeight: "400px", maxHeight: "400px" }}>
                                         <div className="text-body-secondary">No more post to see.</div>
                                     </div>
                                 )}
@@ -165,11 +174,11 @@ const MyProfile = () => {
                             <div className="col">
                                 {topPost[2] ? (
                                     // Si el tercer post existe, mostrar la card con sus detalles
-                                    <a href={`/dashboard/post/${topPost[2].id}`} className="card h-100 card-link-1" style={{ minHeight: "500px", maxHeight: "500px" }}>
+                                    <a href={`/dashboard/post/${topPost[2].id}`} className="card h-100 card-link-1" style={{ minHeight: "400px", maxHeight: "400px" }}>
                                         {topPostImages && topPostImages.length > 2 && topPostImages[2] !== null ? (
                                             <img src={`data:image/jpeg;base64,${topPostImages[2].datos}`} className="card-img-top" style={{ minHeight: "150px", maxHeight: "150px", objectFit: "cover" }} alt="..." />
                                         ) : (
-                                            <img src="/testImages/defaultImage.jpg" className="card-img-top" style={{ minHeight: "100px", minHeight: "150px", maxHeight: "150px", objectFit: "cover" }} alt="..." />
+                                            <img src="/testImages/defaultImage.jpg" className="card-img-top" style={{ minHeight: "150px", maxHeight: "150px", objectFit: "cover" }} alt="..." />
                                         )}
                                         <div className="card-body">
                                             <h5 className="card-title">{topPost[2].title}</h5>
@@ -177,33 +186,31 @@ const MyProfile = () => {
                                                 {topPost[2].text}
                                             </p>...
                                         </div>
-                                        <div className="card-footer">
-                                            <small className="text-body-secondary">#: {topPost[2].hashtags}</small>
-                                        </div>
+                                        {/* <small className="card-footer">#: {topPost[2].hashtags}</small> */}
                                     </a>
                                 ) : (
                                     // Si el tercer post no existe, mostrar una card vacía
-                                    <div className="card h-100 text-center d-flex align-items-center justify-content-center" style={{ minHeight: "500px", maxHeight: "500px" }}>
+                                    <div className="card h-100 text-center d-flex align-items-center justify-content-center" style={{ minHeight: "400px", maxHeight: "400px" }}>
                                         <div className="text-body-secondary">No more post to see.</div>
                                     </div>
                                 )}
                             </div>
 
                             {/* Renderizar una card vacía para "Go watch all post" */}
-                            {currentUsername === userData.username ? (
+                            {currentUsername === userData.username && isTokenValid() ? (
                             <div className="col">
-                                <div className="card h-100 text-center d-flex align-items-center justify-content-center" style={{ minHeight: "500px", maxHeight: "500px" }}>
-                                    <a href="/publish" className="upload-button mb-3">
+                                <a href="/publish" className="card h-100 text-center d-flex align-items-center justify-content-center upload-card" style={{ minHeight: "400px", maxHeight: "400px" }}>
+                                    <p className="upload-button-profile mb-3">
                                         +
-                                    </a>
-                                </div>
+                                    </p>
+                                </a>
                             </div>
                             ) : (
                                 <div className="col">
                                     {/* <a href={currentUsername === userData.username ? "/myPage" : `/page/${userData.username}`} className="card h-100 text-center d-flex align-items-center justify-content-center upload-button-text" style={{ minHeight: "500px", maxHeight: "500px" }}>
                                         otro link
                                     </a> */}
-                                    <a href={`/page/${userData.username}`} className="card h-100 text-center d-flex align-items-center justify-content-center upload-button-text-2" style={{ minHeight: "500px", maxHeight: "500px" }}>
+                                    <a href={`/page/${userData.username}`} className="card h-100 text-center d-flex align-items-center justify-content-center upload-button-text-2" style={{ minHeight: "400px", maxHeight: "400px" }}>
                                         <p style={{ fontSize: "32px" }}>{userData.username}'s page</p>
                                         <p style={{ fontSize: "16px" }}>Check their page for more posts!</p>
                                     </a>

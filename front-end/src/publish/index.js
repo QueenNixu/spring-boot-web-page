@@ -25,6 +25,28 @@ const Publish = () => {
     const MAX_TEXT_CHAR_LIMIT = 2000;
     const MAX_HASHTAGS_CHAR_LIMIT = 255;
 
+    const [highlightedHashtags, setHighlightedHashtags] = useState('');
+    const [hashtagsWithoutHash, setHashtagsWithoutHash] = useState('');
+
+    const handleHashtagsChange = (event) => {
+        const value = event.target.value;
+        const validHashtags = value.match(/#[a-zA-Z0-9]+/g) || [];
+        const highlighted = validHashtags.join(' '); // Une los hashtags válidos
+        // const highlighted = value.replace(/#[a-zA-Z0-9]+/g, (match) => `<span style="color: blue;">${match}</span>`);
+        setHighlightedHashtags(highlighted);
+        setHashtags(value);
+        const hashtagsWithoutHash = validHashtags.join('').replace(/#/g, ' '); // Eliminar solo los caracteres '#'
+        setHashtagsWithoutHash(hashtagsWithoutHash);
+
+        setHashtagsChar(hashtagsWithoutHash.length);
+        
+        if (hashtagsWithoutHash.length > MAX_HASHTAGS_CHAR_LIMIT) {
+            setErrorMessages({ ...errorMessages, hashtags: `Hashtags cannot exceed ${MAX_HASHTAGS_CHAR_LIMIT} characters` });
+        } else {
+            setErrorMessages({ ...errorMessages, hashtags: '' });
+        }
+    };
+
     useEffect(() => {
         if(jwt) {
             const tokenParts = jwt.split('.');
@@ -63,35 +85,11 @@ const Publish = () => {
         console.log(images);
     };
 
-    // const handleVideoChange = (event) => {
-    //     const files = event.target.files;
-    //     const newVideos = [...videos];
-
-    //     for (let i = 0; i < files.length; i++) {
-    //         const file = files[i];
-    //         const reader = new FileReader();
-
-    //         reader.onload = (e) => {
-    //             newVideos.push({ file, preview: e.target.result });
-    //             setVideos([...newVideos]);
-    //         };
-
-    //         reader.readAsDataURL(file);
-    //     }
-        
-    // };
-
     const removeImage = (index) => {
         const newImages = [...images];
         newImages.splice(index, 1);
         setImages(newImages);
     };
-
-    // const removeVideo = (index) => {
-    //     const newVideos = [...videos];
-    //     newVideos.splice(index, 1);
-    //     setVideos(newVideos);
-    // };
 
     const updateTitle = (value) => {
         setTitle(value);
@@ -110,16 +108,6 @@ const Publish = () => {
             setErrorMessages({ ...errorMessages, text: `Text cannot exceed ${MAX_TEXT_CHAR_LIMIT} characters` });
         } else {
             setErrorMessages({ ...errorMessages, text: '' });
-        }
-    };
-
-    const updateHashtags = (value) => {
-        setHashtags(value);
-        setHashtagsChar(value.length);
-        if (value.length > MAX_HASHTAGS_CHAR_LIMIT) {
-            setErrorMessages({ ...errorMessages, hashtags: `Hashtags cannot exceed ${MAX_HASHTAGS_CHAR_LIMIT} characters` });
-        } else {
-            setErrorMessages({ ...errorMessages, hashtags: '' });
         }
     };
 
@@ -156,7 +144,7 @@ const Publish = () => {
             } else if(!text.trim() && textChar < MAX_TEXT_CHAR_LIMIT) {
                 errors.text = 'Text is required';
             }
-            if(hashtagsChar >MAX_HASHTAGS_CHAR_LIMIT) {
+            if(hashtagsChar > MAX_HASHTAGS_CHAR_LIMIT) {
                 errors.hashtags = `Hashtags cannot exceed ${MAX_HASHTAGS_CHAR_LIMIT} characters`;
             } else if(!hashtags.trim() && hashtagsChar < MAX_HASHTAGS_CHAR_LIMIT) {
                 errors.hashtags = 'Hashtags are required';
@@ -170,7 +158,7 @@ const Publish = () => {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('text', text);
-            formData.append('hashtags', hashtags);
+            formData.append('hashtags', hashtagsWithoutHash.trim());
 
             images.forEach((image, index) => {
                 formData.append(`images`, image.file);
@@ -198,6 +186,30 @@ const Publish = () => {
         });
     };
 
+    const handleKeyDown = (event) => {
+        // Ejemplo: prevenir que se ingresen caracteres que no sean alfanuméricos ni '#'
+        const allowedCharacters = /^[a-zA-Z0-9#\s]+$/;
+        if (!allowedCharacters.test(event.key)) {
+            event.preventDefault();
+        }
+    };
+    
+    const handleKeyUp = (event) => {
+        // Ejemplo: actualizar el estado del componente después de que el usuario haya soltado una tecla
+        const newValue = event.target.value;
+        // Actualizar el estado interno del componente con el nuevo valor
+        setHashtags(newValue);
+    };
+    
+    const logInfo = () => {
+
+        console.log("hashtags: ", hashtags);
+        console.log("highlightedHashtags: ", highlightedHashtags);
+        console.log("hashtagsWithoutHash: ", hashtagsWithoutHash);
+
+        console.log("hashtagsWithoutHash.trim(): ", hashtagsWithoutHash.trim());
+
+    }
     
     
 
@@ -280,22 +292,36 @@ const Publish = () => {
                                 <input
                                     className={`form-control ${errorMessages.hashtags && 'is-invalid'}`}
                                     id="hashtags"
-                                    placeholder="Hashtags beginning with # and separated with a space"
+                                    placeholder=""
                                     value={hashtags}
-                                    onChange={(e) => updateHashtags(e.target.value)}
+                                    onChange={(e) => handleHashtagsChange(e)}
                                     onClick={() => {
                                         if (!hashtags.trim()) {
                                             setErrorMessages({ ...errorMessages, hashtags: '' });
                                         }
                                     }}
+                                    onKeyDown={(e) => handleKeyDown(e)}
+                                    onKeyUp={(e) => handleKeyUp(e)}
+                                    pattern="[a-zA-Z0-9#\s]+"
                                 />
+                                <p style={{ margin: '0' }}>Valid hashtags: <span dangerouslySetInnerHTML={{ __html: highlightedHashtags }}></span></p>
+
                                 {errorMessages.hashtags && <div className="invalid-feedback">{errorMessages.hashtags}</div>}
                             </div>
                             <span style={{ paddingTop: "0.375rem", paddingLeft: "0.25rem" }}>{hashtagsChar}/{MAX_HASHTAGS_CHAR_LIMIT}</span>
                         </div>
 
+                        {/* <div className='mb-3' style={{ display: "flex", justifyContent: "space-between"}}>
+                            <div style={{ width: "100%" }}>
+
+                            </div>
+                        </div> */}
+
                         <div className='text-center'>
-                            <button type="button" className="btn btn-primary" onClick={() => publish()}>Submit</button>
+                            <button type="button" className="btn btn-primary" onClick={() =>
+                                publish()
+                                // logInfo()
+                                }>Submit</button>
                         </div>
                     </form>
                 </div>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocalState } from '../util/useLocalStorage';
 import { useNavigate  } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
 
@@ -12,6 +13,22 @@ const Login = () => {
     const navigate = useNavigate();
 
     //console.log(jwt);
+
+    const isTokenValid = () => {
+        if (!jwt) return false; // Si no hay JWT, retorna false
+
+        const decodedToken = jwtDecode(jwt); // Decodifica el token JWT
+        const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+
+        return decodedToken.exp > currentTimeInSeconds; // Retorna true si el token no ha expirado
+    };
+
+    useEffect(() => {
+        if (isTokenValid()) {
+            window.location.href="/";
+        }
+    }, []);
+    
 
     function sendLoginRequest() {
         //console.log("Sending Login Request!");
@@ -43,7 +60,7 @@ const Login = () => {
         .catch((message) => {
             alert(message);
         });
-        }
+    }
 
     return (
         <div className="container d-flex justify-content-center align-items-center" style={{ margin: '50px' }}>

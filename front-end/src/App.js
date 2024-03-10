@@ -1,6 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { useLocalState } from './util/useLocalStorage';
 import { Route, Routes } from 'react-router-dom';
 import Homepage from './homepage';
 import Post from './post';
@@ -13,6 +12,7 @@ import Dashboard from './dashboard';
 import Profile from './profile';
 import Page from './page';
 import MyPage from './myPage';
+import Register from './register';
 
 function App() {
 
@@ -22,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/post/:id" element={<Post/>} />
         <Route path="/profile/:username" element={<Profile/>} />

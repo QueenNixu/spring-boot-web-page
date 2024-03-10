@@ -40,7 +40,7 @@ const Header = () => {
         <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: '#000', paddingBottom: 0, marginBottom: 0 }}>
             <div className="container-fluid d-flex">
 
-                <Link><img src="/springIcon.png" style={{ minHeight: "40px", maxHeight: "40px", marginBottom: "2px" }} /></Link>
+                <Link to="/"><img src="/springIcon.png" style={{ minHeight: "40px", maxHeight: "40px", marginBottom: "2px" }} /></Link>
                 <Link className="navbar-brand" to="/">Mi App</Link>
 
                 <div id="navbarSupportedContent" style={{ width: '80%' }}>

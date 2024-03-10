@@ -60,10 +60,14 @@ const MyPage = () => {
                     {posts ? (
                         posts.map((post, index) => (
                             <a key={post.id} href={`/myPage/post/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                <Card className="post-card" style={{ marginBottom: index !== posts.length - 1 ? '20px' : 0 }}>
+                                <Card className="post-card" style={{ marginBottom: index !== posts.length - 1 ? '20px' : 0, maxHeight: "150px", minHeight: "150px", overflow: "hidden" }}>
                                     <Card.Body>
                                         <Card.Title>Title: {post.title}</Card.Title>
-                                        <Card.Text>#: {post.hashtags}</Card.Text>
+                                        <Card.Text>
+                                            {post.hashtags.split(" ").map((hashtag, index) => (
+                                                <a className='card-hashtag' href={`/myPage/${hashtag}`} key={index}>#{hashtag} </a>
+                                            ))}
+                                        </Card.Text>
                                     </Card.Body>
                                 </Card>
                             </a>

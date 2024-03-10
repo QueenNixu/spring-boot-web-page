@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocalState } from '../util/useLocalStorage';
 import { Link } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 
 const Post = () => {
@@ -11,9 +12,18 @@ const Post = () => {
 
     const [jwt, setJwt] = useLocalState("", "jwt");
     const [post, setPost] = useState("");
+    const [hashtags, setHashtags] = useState([]);
     const [formattedDate, setFormattedDate] = useState(null);
     const [images, setImages] = useState([]);
     const [username, setUsername] = useState("");
+
+    useEffect(() => {
+        // Verificamos si post tiene datos y luego dividimos las hashtags si es necesario
+        if (post.hashtags) {
+          const hashtagsArray = post.hashtags.split(" ");
+          setHashtags(hashtagsArray);
+        }
+      }, [post]); // Este efecto se ejecuta cada vez que post se actualiza
 
     useEffect(() => {
         if(jwt) {
@@ -84,6 +94,15 @@ const Post = () => {
 
     }
 
+    const isTokenValid = () => {
+        if (!jwt) return false; // Si no hay JWT, retorna false
+
+        const decodedToken = jwtDecode(jwt); // Decodifica el token JWT
+        const currentTimeInSeconds = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+
+        return decodedToken.exp > currentTimeInSeconds; // Retorna true si el token no ha expirado
+    };
+
     return (
         <div className="container">
             {post === "" ? (
@@ -95,7 +114,7 @@ const Post = () => {
                     <div className="card mt-5 mb-2">
                         <div className="card-body">
                             <h1 className="mt-1">{post.title}</h1>
-                            <h2 className="card-title">By: <Link to={`/profile/${post.user.username}`}>{currentUsername === post.user.username ? ("You") : (post.user.username)}</Link></h2>
+                            <h2 className="card-title">By: <Link className='card-hashtag' to={`/profile/${post.user.username}`}>{currentUsername === post.user.username && isTokenValid() ? ("You") : (post.user.username)}</Link></h2>
                             <h6 className="card-subtitle mb-2 text-muted">Publish Date: {formattedDate}</h6>
                             <hr className="my-2"></hr>
                             <p className="text-container">{post.text}</p>
@@ -111,9 +130,11 @@ const Post = () => {
                                     <hr className="my-1"></hr>
                                 </div>
                             )}
-                            <p className="card-text">#{post.hashtags}</p>
+                            {hashtags.map((hashtag, index) => (
+                                <a href={`/currentPath/${hashtag}`} className="card-hashtag" key={index}>#{hashtag} </a>
+                            ))}
 
-                            {currentUsername === post.user.username && (
+                            {currentUsername === post.user.username && isTokenValid() && (
                                 <div>
                                     <hr className="my-1"></hr>
                                     <button className="btn btn-primary" type="button" style={{ marginTop: '0.5rem', marginRight: '0.5rem' }}>Edit</button>
